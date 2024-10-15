@@ -1,0 +1,5 @@
+Flask
+flask-cors
+transformers
+scikit-learn
+torch  # Required for transformers to run

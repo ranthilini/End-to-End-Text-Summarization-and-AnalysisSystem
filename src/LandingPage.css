@@ -1,0 +1,44 @@
+/* Center the container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Style for the main heading */
+h2 {
+    font-size: 2.5rem;
+    color: #3f51b5; /* Material UI primary color */
+    margin-bottom: 20px;
+}
+
+/* Style for the subheading */
+h5 {
+    font-size: 1.5rem;
+    color: #555; /* Dark grey for better contrast */
+    margin-bottom: 30px;
+}
+
+/* Style for the button */
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    background-color: #3f51b5; /* Primary color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+button:hover {
+    background-color: #303f9f; /* Darker shade for hover effect */
+}
+
+/* Image styling */
+img {
+    border-radius: 10px; /* Rounded corners for images */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
