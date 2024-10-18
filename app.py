@@ -14,11 +14,12 @@ import concurrent.futures
 import torch
 from gensim import corpora
 from gensim.models import LdaModel
+from keybert import KeyBERT  # Model-based keyword extraction
 
 # Download stopwords if not already available
 nltk.download('stopwords')
 
-app = Flask(__name__)
+app = Flask(__name__)  # Corrected __name__
 CORS(app)
 
 # Check if GPU is available
@@ -30,17 +31,17 @@ sentiment_analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncas
 tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 topic_classifier = RobertaForSequenceClassification.from_pretrained('roberta-base', num_labels=5).to(device)  # Assuming 5 topics
 
+# Initialize KeyBERT for keyword extraction
+kw_model = KeyBERT(model="distilbert-base-nli-mean-tokens")
+
 @app.route('/')
 def home():
     return "Welcome to the Text Analysis API! Use the /analyze endpoint to analyze text."
 
-# Function for keyword extraction
-def extract_keywords(text, n=100):
-    vectorizer = TfidfVectorizer(stop_words='english')
-    X = vectorizer.fit_transform([text])
-    indices = X[0].tocoo().col.argsort()[-n:][::-1]
-    keywords = [vectorizer.get_feature_names_out()[i] for i in indices]
-    return keywords
+# Function for model-based keyword extraction
+def extract_keywords(text, n=10):
+    keywords = kw_model.extract_keywords(text, keyphrase_ngram_range=(1, 2), stop_words='english', top_n=n)
+    return [keyword[0] for keyword in keywords]
 
 # Function for LDA-based topic modeling (returning topics as sentences without commas)
 def lda_topic_modeling(text, num_topics=5, num_words=5):
@@ -88,9 +89,9 @@ def chunk_text(text, max_length=512):
 # Preprocessing function for text
 def preprocess_text(text):
     text = text.lower()
-    text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)
-    text = re.sub(r"\d+", "", text)
-    text = " ".join(text.split())
+    text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)  # Removing Punctuation
+    text = re.sub(r"\d+", "", text)  # Removing numbers
+    text = " ".join(text.split())  # Multiple spaces are reduced to a single space
     stop_words = set(stopwords.words('english'))
     stemmer = PorterStemmer()
     words = text.split()
